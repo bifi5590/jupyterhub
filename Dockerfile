@@ -22,26 +22,28 @@
 # from your docker directory.
 
 FROM ubuntu:18.04
-LABEL maintainer="Jupyter Project <jupyter@googlegroups.com>"
+LABEL maintainer="Alexander von Birgelen <avonbirgelen@phoenixcontact.com>"
 
 # install nodejs, utf8 locale, set CDN because default httpredir is unreliable
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update && \
     apt-get -y upgrade && \
     apt-get -y install wget git bzip2 && \
+    apt-get -y install nano && \
     apt-get purge && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 ENV LANG C.UTF-8
 
-# install Python + NodeJS with conda
+# install Python + NodeJS with conda + jupyter-notebook
 RUN wget -q https://repo.continuum.io/miniconda/Miniconda3-4.5.1-Linux-x86_64.sh -O /tmp/miniconda.sh  && \
     echo '0c28787e3126238df24c5d4858bd0744 */tmp/miniconda.sh' | md5sum -c - && \
     bash /tmp/miniconda.sh -f -b -p /opt/conda && \
     /opt/conda/bin/conda install --yes -c conda-forge \
       python=3.6 sqlalchemy tornado jinja2 traitlets requests pip pycurl \
-      nodejs configurable-http-proxy && \
+      nodejs configurable-http-proxy jupyter && \
     /opt/conda/bin/pip install --upgrade pip && \
+    /opt/conda/bin/pip install jupyterhub-systemdspawner jupyterhub-simplespawner dockerspawner && \
     rm /tmp/miniconda.sh
 ENV PATH=/opt/conda/bin:$PATH
 
@@ -57,4 +59,7 @@ EXPOSE 8000
 
 LABEL org.jupyter.service="jupyterhub"
 
-CMD ["jupyterhub"]
+ADD ./proficloud/jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
+ADD ./proficloud/dictauth.py /srv/jupyterhub/dictauth.py
+
+CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
