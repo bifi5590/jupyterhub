@@ -1,0 +1,2 @@
+docker container stop jupyterhubtest
+docker container rm jupyterhubtest
