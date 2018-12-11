@@ -24,16 +24,21 @@
 FROM ubuntu:18.04
 LABEL maintainer="Alexander von Birgelen <avonbirgelen@phoenixcontact.com>"
 
+ENV container docker
+
 # install nodejs, utf8 locale, set CDN because default httpredir is unreliable
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update && \
     apt-get -y upgrade && \
     apt-get -y install wget git bzip2 && \
     apt-get -y install nano && \
+    apt-get -y install systemd && \
     apt-get purge && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 ENV LANG C.UTF-8
+
+RUN systemctl set-default multi-user.target
 
 # install Python + NodeJS with conda + jupyter-notebook
 RUN wget -q https://repo.continuum.io/miniconda/Miniconda3-4.5.1-Linux-x86_64.sh -O /tmp/miniconda.sh  && \
@@ -57,9 +62,21 @@ RUN mkdir -p /srv/jupyterhub/
 WORKDIR /srv/jupyterhub/
 EXPOSE 8000
 
+RUN ln -s /usr/local/bin/configurable-http-proxy /usr/bin/configurable-http-proxy
+
 LABEL org.jupyter.service="jupyterhub"
 
 ADD ./proficloud/jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
 ADD ./proficloud/dictauth.py /srv/jupyterhub/dictauth.py
 
-CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
+ADD ./proficloud/jupyterhub.service /etc/systemd/system/jupyterhub.service
+
+ADD ./proficloud/jupyterhub.sh /srv/jupyterhub/jupyterhub.sh
+RUN chmod +x /srv/jupyterhub/jupyterhub.sh
+
+RUN systemctl enable jupyterhub.service
+
+VOLUME ["/sys/fs/cgroup"]
+#VOLUME ["/run"]
+
+CMD ["/sbin/init"]

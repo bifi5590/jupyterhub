@@ -864,7 +864,7 @@
 #  already.
 #
 #  Supports Linux and BSD variants only.
-#c.LocalAuthenticator.create_system_users = False
+c.LocalAuthenticator.create_system_users = True
 
 ## Whitelist all users from this UNIX group.
 #
@@ -916,22 +916,24 @@
 ## The number of threads to allocate for encryption
 #c.CryptKeeper.n_threads = 4
 
+#c.ConfigurableHTTPProxy.command = '/usr/local/bin/configurable-http-proxy'
+
 import importlib.util
 spec = importlib.util.spec_from_file_location("dictauth", "/srv/jupyterhub/dictauth.py")
 foo = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(foo)
 c.JupyterHub.authenticator_class = foo.DictionaryAuthenticator
 
-#c.JupyterHub.spawner_class = 'systemdspawner.SystemdSpawner'
-#c.SystemdSpawner.cpu_limit = 1.0
-#c.SystemdSpawner.mem_limit = '2G'
-#c.SystemdSpawner.dynamic_users = True
-#c.SystemdSpawner.isolate_tmp = True
-#c.SystemdSpawner.isolate_devices = True
-#c.SystemdSpawner.disable_user_sudo = True
-#c.SystemdSpawner.readonly_paths = ['/']
+c.JupyterHub.spawner_class = 'systemdspawner.SystemdSpawner'
+c.SystemdSpawner.cpu_limit = 1.0
+c.SystemdSpawner.mem_limit = '2G'
+c.SystemdSpawner.dynamic_users = True
+c.SystemdSpawner.isolate_tmp = True
+c.SystemdSpawner.isolate_devices = True
+c.SystemdSpawner.disable_user_sudo = True
+c.SystemdSpawner.readonly_paths = ['/']
 
-c.JupyterHub.spawner_class = 'simplespawner.SimpleLocalProcessSpawner'
+#c.JupyterHub.spawner_class = 'simplespawner.SimpleLocalProcessSpawner'
 
 #import os
 #c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'

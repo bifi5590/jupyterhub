@@ -1,0 +1,12 @@
+[Unit]
+Description=Jupyterhub
+
+[Service]
+User=root
+Environment=PATH=/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/srv/jupyterhub/jupyterhub.sh
+WorkingDirectory=/srv/jupyterhub/
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
