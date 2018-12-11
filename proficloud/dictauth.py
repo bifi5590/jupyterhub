@@ -1,5 +1,6 @@
 from tornado import gen
 from IPython.utils.traitlets import Dict
+#from jupyterhub.auth import LocalAuthenticator
 from jupyterhub.auth import Authenticator
 
 class DictionaryAuthenticator(Authenticator):

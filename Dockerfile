@@ -77,6 +77,5 @@ RUN chmod +x /srv/jupyterhub/jupyterhub.sh
 RUN systemctl enable jupyterhub.service
 
 VOLUME ["/sys/fs/cgroup"]
-#VOLUME ["/run"]
 
 CMD ["/sbin/init"]
